@@ -1,6 +1,6 @@
 import {IsString, IsDateString, IsArray, IsNotEmpty, IsOptional} from "class-validator";
 
-export class CreateMeetupDto {
+export class UpdateMeetupDto {
     @IsString()
     @IsOptional()
     title?: string;
