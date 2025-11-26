@@ -22,7 +22,7 @@ export class MeetupService {
     }
 
     async findOne(id: number): Promise<MeetupEntity> {
-        const meetup = this.meetupRepository.findOne({ where: { id } });
+        const meetup = await this.meetupRepository.findOne({ where: { id } });
         if(!meetup) {
             throw new NotFoundException(`Meetup not found, id: ${id}`);
         }
@@ -30,9 +30,9 @@ export class MeetupService {
     }
 
     async update(id: number, updateMeetupDto: UpdateMeetupDto): Promise<MeetupEntity> {
-        const meetup = this.findOne(id);
-        const updatedMeetup = Object.assign(meetup, updateMeetupDto);
-        return this.meetupRepository.save(updatedMeetup);
+        await this.findOne(id);
+        await this.meetupRepository.update(id, updateMeetupDto);
+        return await this.findOne(id);
     }
 
     async remove(id: number): Promise<void> {
