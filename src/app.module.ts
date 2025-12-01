@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { MeetupModule } from "./meetups/meetup.module";
 import {ConfigModule, ConfigService} from "@nestjs/config";
+import {AuthModule} from "./auth/auth.module";
 
 
 @Module({
@@ -28,6 +29,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
           inject: [ConfigService],
       }),
       MeetupModule,
+      AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
