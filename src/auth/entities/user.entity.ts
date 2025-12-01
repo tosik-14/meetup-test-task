@@ -16,7 +16,7 @@ export class User {
     @Column({ default: ROLE.USER })
     role: ROLE;
 
-    @OneToMany(() => MeetupEntity, (meetup) => meetup.organizer)
+    @OneToMany(() => MeetupEntity, (meetup) => meetup.admin)
     meetups: MeetupEntity[];
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
