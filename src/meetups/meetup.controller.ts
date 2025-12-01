@@ -8,7 +8,7 @@ import {
     Delete,
     HttpCode,
     HttpStatus,
-    ParseIntPipe, Query,
+    ParseIntPipe, Query, ValidationPipe,
 } from "@nestjs/common";
 import { MeetupService } from "./meetup.service";
 import { MeetupEntity } from "./entities/meetup.entity";
@@ -28,13 +28,13 @@ export class MeetupController {
     @Get()
     @ApiOperation({ summary: "Get meetup list" })
     @ApiQuery({ name: "search", required: false, description: "Search by title and description" })
-    @ApiQuery({ name: "tags", required: false, type: [String], description: "Filter by tags" })
+    @ApiQuery({ name: "tags", required: false, type: String, description: "Filter by tags" })
     @ApiQuery({ name: "page", required: false, example: MEETUP_CONSTANT.DEFAULT_PAGE })
     @ApiQuery({ name: "limit", required: false, example: MEETUP_CONSTANT.DEFAULT_LIMIT })
     @ApiQuery({ name: "sortBy", required: false, enum: MEETUP_CONSTANT.SORT_FIELDS })
     @ApiQuery({ name: "sortOrder", required: false, enum: ["ASC", "DESC"] })
     @ApiResponse({ status: 200, description: "Successful response" })
-    async findAll(@Query() query: FindSortMeetupDto): Promise<{
+    async findAll(@Query(new ValidationPipe({ transform: true })) query: FindSortMeetupDto): Promise<{
         data: MeetupEntity[];
         total: number;
         page: number;
