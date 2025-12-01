@@ -1,11 +1,12 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
 import { User } from "./entities/user.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
        @InjectRepository(User)
        private userRepository: Repository<User>,
        private jwtService: JwtService,
+       private configService: ConfigService,
     ) {}
 
     async register(registerDto: RegisterDto){
@@ -58,13 +60,15 @@ export class AuthService {
             role: user.role,
         };
 
-        const accessToken = this.jwtService.sign(tokenPayload, {
-            expiresIn: "3d",
-        })
+        const expiresInTime: string | number = this.configService.get<string>("JWT_EXPIRES_IN") ?? "3d"!;
+        const accessToken = this.jwtService.sign(tokenPayload,
+            { expiresIn: expiresInTime }  as JwtSignOptions
+        );
 
+        const refreshTokenExpiresIn = this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN');
         const refreshToken = this.jwtService.sign(
             { id: user.id },
-            { expiresIn: "3d" },
+            { expiresIn: refreshTokenExpiresIn } as JwtSignOptions,
         );
 
         return {
