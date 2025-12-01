@@ -8,7 +8,7 @@ import {
     Delete,
     HttpCode,
     HttpStatus,
-    ParseIntPipe, Query, ValidationPipe,
+    ParseIntPipe, Query, ValidationPipe, UseGuards,
 } from "@nestjs/common";
 import { MeetupService } from "./meetup.service";
 import { MeetupEntity } from "./entities/meetup.entity";
@@ -17,6 +17,11 @@ import { UpdateMeetupDto } from "./dto/update-meetup.dto";
 import { FindSortMeetupDto } from "./dto/find-sort-meetup.dto";
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from "@nestjs/swagger";
 import { MEETUP_CONSTANT } from "./constants/meetup.constants";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { RolesDecorator } from "../auth/decorators/roles.decorator";
+import { ROLE } from "../auth/entities/user-role.enum";
+
 
 @ApiTags("meetups")
 @Controller("meetups")
@@ -61,6 +66,8 @@ export class MeetupController {
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @RolesDecorator(ROLE.ADMIN)
     @ApiOperation({ summary: "Create new meetup" })
     @ApiResponse({ status: 201, description: "Meetup created" })
     @ApiResponse({ status: 400, description: "Invalid data" })
@@ -69,6 +76,8 @@ export class MeetupController {
     }
 
     @Patch(":id")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @RolesDecorator(ROLE.ADMIN)
     @ApiOperation({ summary: "Update meetup data" })
     @ApiResponse({ status: 200, description: "Meetup updated" })
     @ApiResponse({ status: 404, description: "Meetup not found" })
@@ -80,6 +89,8 @@ export class MeetupController {
     }
 
     @Delete(":id")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @RolesDecorator(ROLE.ADMIN)
     @ApiOperation({ summary: "Delete meetup" })
     @ApiResponse({ status: 200, description: "Meetup deleted" })
     @ApiResponse({ status: 404, description: "Meetup not found" })
