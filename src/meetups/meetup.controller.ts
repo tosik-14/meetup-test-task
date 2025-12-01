@@ -14,7 +14,9 @@ import { MeetupService } from "./meetup.service";
 import { MeetupEntity } from "./entities/meetup.entity";
 import { CreateMeetupDto } from "./dto/create-meetup.dto";
 import { UpdateMeetupDto } from "./dto/update-meetup.dto";
-import {FindSortMeetupDto} from "./dto/find-sort-meetup.dto";
+import { FindSortMeetupDto } from "./dto/find-sort-meetup.dto";
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from "@nestjs/swagger";
+import { MEETUP_CONSTANT } from "./constants/meetup.constants";
 
 @Controller('meetups')
 export class MeetupController {
@@ -23,6 +25,14 @@ export class MeetupController {
     ) {}
 
     @Get()
+    @ApiOperation({ summary: "Get meetup list" })
+    @ApiQuery({ name: "search", required: false, description: "Search by title and description" })
+    @ApiQuery({ name: "tags", required: false, type: [String], description: "Filter by tags" })
+    @ApiQuery({ name: "page", required: false, example: MEETUP_CONSTANT.DEFAULT_PAGE })
+    @ApiQuery({ name: "limit", required: false, example: MEETUP_CONSTANT.DEFAULT_LIMIT })
+    @ApiQuery({ name: "sortBy", required: false, enum: MEETUP_CONSTANT.SORT_FIELDS })
+    @ApiQuery({ name: "sortOrder", required: false, enum: ["ASC", "DESC"] })
+    @ApiResponse({ status: 200, description: "Successful response" })
     async findAll(@Query() query: FindSortMeetupDto): Promise<{
         data: MeetupEntity[];
         total: number;
@@ -42,16 +52,25 @@ export class MeetupController {
     }
 
     @Get(":id")
+    @ApiOperation({ summary: "Get meetup by id" })
+    @ApiResponse({ status: 200, description: "Meetup found" })
+    @ApiResponse({ status: 404, description: "Meetup not found" })
     async findOne(@Param("id", ParseIntPipe) id: number): Promise<MeetupEntity> {
         return this.meetupService.findOne(id);
     }
 
     @Post()
+    @ApiOperation({ summary: "Create new meetup" })
+    @ApiResponse({ status: 201, description: "Meetup created" })
+    @ApiResponse({ status: 400, description: "Invalid data" })
     async create(@Body() createMeetupDto: CreateMeetupDto): Promise<MeetupEntity> {
         return this.meetupService.create(createMeetupDto);
     }
 
     @Patch(":id")
+    @ApiOperation({ summary: "Update meetup data" })
+    @ApiResponse({ status: 200, description: "Meetup updated" })
+    @ApiResponse({ status: 404, description: "Meetup not found" })
     async update(
         @Param("id", ParseIntPipe) id: number,
         @Body() updateMeetupDto: UpdateMeetupDto,
@@ -60,6 +79,9 @@ export class MeetupController {
     }
 
     @Delete(":id")
+    @ApiOperation({ summary: "Delete meetup" })
+    @ApiResponse({ status: 200, description: "Meetup deleted" })
+    @ApiResponse({ status: 404, description: "Meetup not found" })
     @HttpCode(HttpStatus.NO_CONTENT)
     async delete(
         @Param("id", ParseIntPipe) id: number,
