@@ -15,7 +15,7 @@ import { MeetupEntity } from "./entities/meetup.entity";
 import { CreateMeetupDto } from "./dto/create-meetup.dto";
 import { UpdateMeetupDto } from "./dto/update-meetup.dto";
 import { FindSortMeetupDto } from "./dto/find-sort-meetup.dto";
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from "@nestjs/swagger";
+import {ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth} from "@nestjs/swagger";
 import { MEETUP_CONSTANT } from "./constants/meetup.constants";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
@@ -66,20 +66,26 @@ export class MeetupController {
     }
 
     @Post()
+    @ApiBearerAuth("JWT-auth")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @RolesDecorator(ROLE.ADMIN)
-    @ApiOperation({ summary: "Create new meetup" })
+    @ApiOperation({ summary: "Create new meetup, for admin only" })
     @ApiResponse({ status: 201, description: "Meetup created" })
     @ApiResponse({ status: 400, description: "Invalid data" })
+    @ApiResponse({ status: 401, description: "Not authorized" })
+    @ApiResponse({ status: 403, description: "You have no permission" })
     async create(@Body() createMeetupDto: CreateMeetupDto): Promise<MeetupEntity> {
         return this.meetupService.create(createMeetupDto);
     }
 
     @Patch(":id")
+    @ApiBearerAuth("JWT-auth")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @RolesDecorator(ROLE.ADMIN)
-    @ApiOperation({ summary: "Update meetup data" })
+    @ApiOperation({ summary: "Update meetup data, for admin only" })
     @ApiResponse({ status: 200, description: "Meetup updated" })
+    @ApiResponse({ status: 401, description: "Not authorized" })
+    @ApiResponse({ status: 403, description: "You have no permission" })
     @ApiResponse({ status: 404, description: "Meetup not found" })
     async update(
         @Param("id", ParseIntPipe) id: number,
@@ -89,10 +95,13 @@ export class MeetupController {
     }
 
     @Delete(":id")
+    @ApiBearerAuth("JWT-auth")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @RolesDecorator(ROLE.ADMIN)
-    @ApiOperation({ summary: "Delete meetup" })
+    @ApiOperation({ summary: "Delete meetup, for admin only" })
     @ApiResponse({ status: 200, description: "Meetup deleted" })
+    @ApiResponse({ status: 401, description: "Not authorized" })
+    @ApiResponse({ status: 403, description: "You have no permission" })
     @ApiResponse({ status: 404, description: "Meetup not found" })
     @HttpCode(HttpStatus.NO_CONTENT)
     async delete(

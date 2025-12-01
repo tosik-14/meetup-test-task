@@ -8,7 +8,20 @@ async function bootstrap() {
   const config = new DocumentBuilder()
       .setTitle("Meetup test task API")
       .setDescription("API for managing meetups")
-      .setVersion("1.0")
+      .setVersion("1.1")
+      .addBearerAuth(
+          {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+            name: "JWT",
+            description: "Enter JWT Token",
+            in: "header"
+          },
+          "JWT-auth",
+      )
+      .addTag("meetups")
+      .addTag("auth")
       .build();
 
   const document = SwaggerModule.createDocument(app, config);
