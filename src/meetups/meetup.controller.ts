@@ -18,7 +18,8 @@ import { FindSortMeetupDto } from "./dto/find-sort-meetup.dto";
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from "@nestjs/swagger";
 import { MEETUP_CONSTANT } from "./constants/meetup.constants";
 
-@Controller('meetups')
+@ApiTags("meetups")
+@Controller("meetups")
 export class MeetupController {
     constructor(
         private readonly meetupService: MeetupService
