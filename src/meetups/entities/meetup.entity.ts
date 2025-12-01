@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn} from "typeorm";
+import { User } from "../../auth/entities/user.entity";
 
 @Entity()
 export class MeetupEntity {
@@ -19,4 +20,11 @@ export class MeetupEntity {
 
     @Column()
     place: string;
+
+    @ManyToOne(() => User, (user) => user.meetups)
+    @JoinColumn({ name: 'admin_id' })
+    admin: User;
+
+    @Column({ nullable: true })
+    admin_id: number;
 }
