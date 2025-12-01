@@ -46,7 +46,7 @@ export class MeetupService {
         }
 
         const safeSortBy = MEETUP_CONSTANT.SORT_FIELDS.includes(sortBy) ? sortBy : MEETUP_CONSTANT.DEFAULT_SORT_FIELD;
-        queryBuilder.orderBy(`meetup.${safeSortBy}`, sortOrder);
+        queryBuilder.orderBy(`meetup.${safeSortBy}`, sortOrder as "ASC" | "DESC");
 
         const skip = (page - 1) * limit;
         queryBuilder.skip(skip).take(limit);
