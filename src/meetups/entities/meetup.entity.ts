@@ -11,7 +11,7 @@ export class MeetupEntity {
     @Column('text')
     description: string;
 
-    @Column('simple-array')
+    @Column('text', { array: true })
     tags: string[];
 
     @Column()
